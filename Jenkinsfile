@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    triggers {
+        githubPush()
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -8,39 +12,25 @@ pipeline {
             }
         }
 
-        stage('Install Dependencies') {
-            steps {
-                echo 'Installing dependencies...'
-                // Add your dependency installation command here
-            }
-        }
-
         stage('Build') {
             steps {
-                echo 'Building the project...'
-                // Add your build command here
-            }
-        }
+                echo 'New Git push detected. Building project...'
 
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Add your test command here
+                // Replace this with your actual build command.
+                // Example for a Node.js project:
+                // sh 'npm install'
+                // sh 'npm run build'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo 'Build completed successfully!'
         }
 
         failure {
-            echo 'Pipeline failed!'
-        }
-
-        always {
-            echo 'Pipeline execution finished.'
+            echo 'Build failed!'
         }
     }
 }
