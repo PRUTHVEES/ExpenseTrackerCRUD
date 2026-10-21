@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Expense Tracker | Simple & Modern CRUD App</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body data-theme="light">
+  <div class="app-container">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+            <line x1="2" y1="10" x2="22" y2="10"></line>
+            <circle cx="7" cy="15" r="1"></circle>
+          </svg>
+        </div>
+        <div>
+          <h1>Smart Expense Tracker</h1>
+          <p class="subtitle">Track, manage & optimize your personal finances</p>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Currency Selector -->
+        <div class="currency-select-wrapper">
+          <label for="currencySelect" class="sr-only">Currency</label>
+          <select id="currencySelect" title="Select Currency">
+            <option value="$" selected>USD ($)</option>
+            <option value="₹">INR (₹)</option>
+            <option value="€">EUR (€)</option>
+            <option value="£">GBP (£)</option>
+            <option value="¥">JPY (¥)</option>
+          </select>
+        </div>
+
+        <!-- Theme Toggle -->
+        <button id="themeToggleBtn" class="btn btn-icon" title="Toggle Theme" aria-label="Toggle dark mode">
+          <svg id="themeIconSun" class="icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+          <svg id="themeIconMoon" class="icon hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+        </button>
+
+        <!-- Export / Import & Demo Data -->
+        <button id="exportBtn" class="btn btn-secondary btn-sm" title="Export transactions as JSON">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          Export
+        </button>
+        <button id="resetDemoBtn" class="btn btn-ghost btn-sm" title="Reset with demo transactions">
+          Demo
+        </button>
+      </div>
+    </header>
+
+    <!-- Overview Stats Cards -->
+    <section class="stats-grid">
+      <!-- Balance Card -->
+      <div class="stat-card balance-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Balance</span>
+          <span class="stat-badge" id="balanceStatus">Balanced</span>
+        </div>
+        <div class="stat-value" id="totalBalance">$0.00</div>
+        <div class="stat-subtext">Net savings available</div>
+      </div>
+
+      <!-- Income Card -->
+      <div class="stat-card income-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Income</span>
+          <div class="stat-icon-wrapper income">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="19" x2="12" y2="5"></line>
+              <polyline points="5 12 12 5 19 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-value text-success" id="totalIncome">+$0.00</div>
+        <div class="stat-subtext" id="incomeCount">0 transactions</div>
+      </div>
+
+      <!-- Expense Card -->
+      <div class="stat-card expense-card">
+        <div class="stat-header">
+          <span class="stat-title">Total Expenses</span>
+          <div class="stat-icon-wrapper expense">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-value text-danger" id="totalExpense">-$0.00</div>
+        <div class="stat-subtext" id="expenseCount">0 transactions</div>
+      </div>
+
+      <!-- Savings Rate Card -->
+      <div class="stat-card rate-card">
+        <div class="stat-header">
+          <span class="stat-title">Savings Rate</span>
+          <div class="stat-icon-wrapper neutral">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+        </div>
+        <div class="stat-value" id="savingsRate">0%</div>
+        <div class="stat-subtext">of total income saved</div>
+      </div>
+    </section>
+
+    <!-- Main Content Layout: Form (left/top) + History (right/bottom) -->
+    <main class="main-layout">
+      <!-- Left Column: Add/Edit Form & Category Breakdown -->
+      <section class="sidebar-column">
+        <!-- Form Card -->
+        <div class="card form-card">
+          <div class="card-header">
+            <h2 id="formTitle">Add Transaction</h2>
+            <span id="editIndicator" class="badge badge-warning hidden">Editing</span>
+          </div>
+
+          <form id="transactionForm" novalidate>
+            <input type="hidden" id="editTransactionId" value="" />
+
+            <!-- Transaction Type (Toggle buttons) -->
+            <div class="form-group">
+              <label class="form-label">Transaction Type</label>
+              <div class="type-toggle-group">
+                <label class="type-radio-label">
+                  <input type="radio" name="transactionType" value="expense" checked />
+                  <span class="type-btn expense-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Expense
+                  </span>
+                </label>
+                <label class="type-radio-label">
+                  <input type="radio" name="transactionType" value="income" />
+                  <span class="type-btn income-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="5" x2="12" y2="19"></line>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Income
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Title / Description -->
+            <div class="form-group">
+              <label for="titleInput" class="form-label">Description <span class="required">*</span></label>
+              <input
+                type="text"
+                id="titleInput"
+                class="form-input"
+                placeholder="e.g. Grocery shopping, Freelance payment"
+                maxlength="60"
+                required
+              />
+              <span class="error-msg" id="titleError"></span>
+            </div>
+
+            <!-- Amount & Date (2 columns) -->
+            <div class="form-row">
+              <div class="form-group col-half">
+                <label for="amountInput" class="form-label">Amount <span class="required">*</span></label>
+                <div class="input-with-prefix">
+                  <span class="input-prefix" id="currencyPrefix">$</span>
+                  <input
+                    type="number"
+                    id="amountInput"
+                    class="form-input"
+                    placeholder="0.00"
+                    step="0.01"
+                    min="0.01"
+                    required
+                  />
+                </div>
+                <span class="error-msg" id="amountError"></span>
+              </div>
+
+              <div class="form-group col-half">
+                <label for="dateInput" class="form-label">Date <span class="required">*</span></label>
+                <input
+                  type="date"
+                  id="dateInput"
+                  class="form-input"
+                  required
+                />
+                <span class="error-msg" id="dateError"></span>
+              </div>
+            </div>
+
+            <!-- Category -->
+            <div class="form-group">
+              <label for="categorySelect" class="form-label">Category <span class="required">*</span></label>
+              <select id="categorySelect" class="form-input" required>
+                <!-- Filled dynamically based on type -->
+              </select>
+              <span class="error-msg" id="categoryError"></span>
+            </div>
+
+            <!-- Note (Optional) -->
+            <div class="form-group">
+              <label for="noteInput" class="form-label">Note / Reference (Optional)</label>
+              <input
+                type="text"
+                id="noteInput"
+                class="form-input"
+                placeholder="e.g. Paid via card, Bill #492"
+                maxlength="100"
+              />
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="submit" id="submitBtn" class="btn btn-primary btn-block">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Add Transaction</span>
+              </button>
+
+              <button type="button" id="cancelEditBtn" class="btn btn-secondary btn-block hidden">
+                Cancel Edit
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Category Breakdown Card -->
+        <div class="card breakdown-card">
+          <div class="card-header">
+            <h3>Expense Breakdown</h3>
+            <span class="text-muted text-sm" id="breakdownTotal">$0.00 spent</span>
+          </div>
+          <div id="breakdownList" class="breakdown-list">
+            <!-- Dynamically populated category bars -->
+          </div>
+        </div>
+      </section>
+
+      <!-- Right Column: Transactions List & Filters -->
+      <section class="content-column">
+        <div class="card history-card">
+          <!-- Card Header with Search & Filters -->
+          <div class="history-header">
+            <div class="history-title-row">
+              <h2>Transactions</h2>
+              <div class="history-actions">
+                <span class="badge badge-neutral" id="resultsCount">0 items</span>
+                <button id="clearAllBtn" class="btn btn-danger-outline btn-sm" title="Clear all transactions">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                  </svg>
+                  Clear All
+                </button>
+              </div>
+            </div>
+
+            <!-- Filter Controls Bar -->
+            <div class="filter-bar">
+              <!-- Search Input -->
+              <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="form-input search-input"
+                  placeholder="Search description, category, or note..."
+                />
+                <button id="clearSearchBtn" class="clear-search-btn hidden" title="Clear search">✕</button>
+              </div>
+
+              <!-- Filter Dropdowns Row -->
+              <div class="filters-row">
+                <!-- Type Filter -->
+                <div class="filter-item">
+                  <select id="filterType" class="form-input filter-select" aria-label="Filter by type">
+                    <option value="all">All Types</option>
+                    <option value="expense">Expenses Only</option>
+                    <option value="income">Income Only</option>
+                  </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="filter-item">
+                  <select id="filterCategory" class="form-input filter-select" aria-label="Filter by category">
+                    <option value="all">All Categories</option>
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+
+                <!-- Sort Order -->
+                <div class="filter-item">
+                  <select id="sortBy" class="form-input filter-select" aria-label="Sort transactions">
+                    <option value="date-desc">Newest First</option>
+                    <option value="date-asc">Oldest First</option>
+                    <option value="amount-desc">Highest Amount</option>
+                    <option value="amount-asc">Lowest Amount</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Transaction Items List -->
+          <div class="transaction-list-container">
+            <ul id="transactionList" class="transaction-list">
+              <!-- Dynamically populated items -->
+            </ul>
+
+            <!-- Empty State Display -->
+            <div id="emptyState" class="empty-state hidden">
+              <div class="empty-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M8 12h8"></path>
+                </svg>
+              </div>
+              <h3 id="emptyTitle">No transactions found</h3>
+              <p id="emptySubtext" class="text-muted">Start by adding your first transaction using the form on the left.</p>
+              <button id="emptyAddDemoBtn" class="btn btn-secondary btn-sm mt-3">Load Sample Transactions</button>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Confirmation Modal for Delete -->
+    <div id="confirmModal" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-card">
+        <div class="modal-icon-warning">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+            <line x1="12" y1="9" x2="12" y2="13"></line>
+            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+          </svg>
+        </div>
+        <h3 id="modalTitle">Confirm Deletion</h3>
+        <p id="modalMessage">Are you sure you want to delete this transaction? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="modalCancelBtn" class="btn btn-secondary">Cancel</button>
+          <button id="modalConfirmBtn" class="btn btn-danger">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite">
+      <span id="toastMessage">Success</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>Expense Tracker &bull; Built with HTML5, CSS3 & Modern JavaScript &bull; Local Storage Persistent</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
