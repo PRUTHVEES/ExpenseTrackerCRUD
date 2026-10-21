@@ -6,6 +6,8 @@
 // ==========================================================================
 // Category Definitions & Metadata
 // ==========================================================================
+
+// New Categories
 const CATEGORIES = {
   expense: [
     { id: 'food', label: 'Food & Dining', icon: '🍔', color: '#f97316' },
