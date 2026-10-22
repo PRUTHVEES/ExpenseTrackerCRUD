@@ -156,7 +156,7 @@ def validate_transaction_input(title, amount_str, date_str, category):
 
     return len(errors) == 0, errors
 
-
+#Comment
 def escape_html(text):
     if not text:
         return ""
